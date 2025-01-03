@@ -39,6 +39,7 @@ class Appointment(StatusUpdater):
 		self.set_onload('appointment_timeslots_data', get_appointment_timeslots(self.scheduled_date, self.appointment_type))
 		self.set_onload('contact_nos', get_all_contact_nos(self.appointment_for, self.party_name))
 		self.set_onload('notification_count', get_all_notification_count(self.doctype, self.name))
+		self.set_onload('validate_past_timeslot', get_validate_past_timeslot(self.appointment_type))
 
 		self.set_can_notify_onload()
 		self.set_scheduled_reminder_onload()
@@ -858,6 +859,14 @@ def get_events(start, end, filters=None):
 		}, as_dict=True, update={"allDay": 0})
 
 	return data
+
+
+@frappe.whitelist()
+def get_validate_past_timeslot(appointment_type):
+	if not appointment_type:
+		return False
+
+	return frappe.get_cached_value("Appointment Type", appointment_type, "validate_past_timeslot")
 
 
 @frappe.whitelist()

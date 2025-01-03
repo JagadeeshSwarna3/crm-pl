@@ -30,7 +30,7 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 	}
 
 	onload_post_render() {
-		this.setup_min_date();
+		this.setup_min_date(this.frm.doc.__onload?.validate_past_timeslot);
 	}
 
 	setup_queries() {
@@ -216,6 +216,21 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 
 	appointment_type() {
 		this.reload_appointment_slot_picker();
+		this.get_validate_past_timeslot();
+	}
+
+	get_validate_past_timeslot() {
+		if (this.frm.doc.appointment_type) {
+			frappe.call({
+				method: "crm.crm.doctype.appointment.appointment.get_validate_past_timeslot",
+				args: {
+					appointment_type: this.frm.doc.appointment_type,
+				},
+				callback: (r) => {
+					this.setup_min_date(r.message);
+				}
+			})
+		}
 	}
 
 	set_scheduled_timeslot(timeslot_start, timeslot_duration) {
@@ -326,11 +341,11 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 		}
 	}
 
-	setup_min_date() {
+	setup_min_date(validate_past_timeslot) {
 		let date_field = this.frm.get_field("scheduled_date");
 		if (date_field) {
-			let min_date = frappe.datetime.str_to_obj(frappe.datetime.get_today());
-			date_field.datepicker.update("minDate", min_date);
+			let min_date = validate_past_timeslot ? frappe.datetime.str_to_obj(frappe.datetime.get_today()) : null;
+			date_field.datepicker?.update("minDate", min_date);
 		}
 	}
 
