@@ -41,7 +41,7 @@ class AppointmentSheetReport(object):
 				a.appointment_for, a.party_name, a.customer_name,
 				a.contact_display, a.contact_mobile, a.contact_phone, a.contact_email,
 				a.applies_to_variant_of, a.applies_to_variant_of_name, a.applies_to_item, a.applies_to_item_name,
-				max(n.last_sent_dt) as last_sent_dt, a.confirmation_dt, a.status
+				max(n.last_sent_dt) as last_sent_dt, a.confirmation_dt, a.status, a.owner
 				{0}
 			from `tabAppointment` a
 			left join `tabNotification Count` n on n.reference_doctype = 'Appointment' and n.reference_name = a.name
@@ -148,6 +148,7 @@ class AppointmentSheetReport(object):
 			{'label': _("Appointment Source"), 'fieldname': 'appointment_source', 'fieldtype': 'Data', 'width': 100},
 			{"label": _("Reminder"), "fieldname": "reminder", "fieldtype": "Data", "width": 200},
 			{"label": _("Confirmation Time"), "fieldname": "confirmation_dt_fmt", "fieldtype": "Data", "width": 140},
+			{'label': _("Created By"), 'fieldname': 'owner', 'fieldtype': 'Link', "options": "User", "width": 150},
 		]
 
 		return columns
