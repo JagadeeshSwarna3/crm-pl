@@ -35,6 +35,10 @@ class AppointmentSheetReport(object):
 		if self.is_vehicle_service:
 			extra_rows = ", a.vehicle_license_plate, a.vehicle_unregistered, a.vehicle_chassis_no, a.vehicle_engine_no"
 
+		has_project_type = frappe.get_meta("Appointment").has_field("project_type")
+		if has_project_type:
+			extra_rows += ", a.project_type"
+
 		self.data = frappe.db.sql("""
 			select a.name as appointment, a.appointment_type, a.appointment_source, a.voice_of_customer, a.remarks,
 				a.scheduled_dt, a.scheduled_date, a.scheduled_time, a.appointment_duration, a.end_dt,
@@ -139,6 +143,10 @@ class AppointmentSheetReport(object):
 				{"label": _("Reg No"), "fieldname": "vehicle_license_plate", "fieldtype": "Data", "width": 80},
 				{"label": _("Chassis No"), "fieldname": "vehicle_chassis_no", "fieldtype": "Data", "width": 150},
 			]
+
+		has_project_type = frappe.get_meta("Appointment").has_field("project_type")
+		if has_project_type:
+			columns.append({"label": _("Project Type"), "fieldname": "project_type", "fieldtype": "Link", "options": "Project Type", "width": 80})
 
 		columns += [
 			{"label": _("Voice of Customer"), "fieldname": "voice_of_customer", "fieldtype": "Data", "width": 200},
