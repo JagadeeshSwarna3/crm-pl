@@ -1,20 +1,17 @@
 frappe.provide('frappe.ui.form');
 
 frappe.ui.form.LeadQuickEntryForm = class LeadQuickEntryForm extends frappe.ui.form.QuickEntryForm {
-	init(doctype, after_insert) {
-		this.skip_redirect_on_error = true;
-		super.init(doctype, after_insert);
-	}
+	skip_redirect_on_error = true
 
 	render_dialog() {
 		this.mandatory = this.mandatory.concat(this.get_lead_fields());
 		this.mandatory = this.mandatory.filter(d => d.fieldname != 'status');
 		super.render_dialog();
-		this.init_post_render_dialog_operations();
+		this.setup_events();
 		this.set_sales_person_from_user();
 	}
 
-	init_post_render_dialog_operations() {
+	setup_events() {
 		let me = this;
 
 		if (me.dialog.fields_dict["tax_id"]) {
