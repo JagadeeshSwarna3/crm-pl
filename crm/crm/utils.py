@@ -19,12 +19,23 @@ def get_address_display(address=None, lead=None):
 
 
 @frappe.whitelist()
-def get_contact_details(contact=None, lead=None, get_contact_no_list=False, link_doctype=None, link_name=None):
+def get_contact_details(
+	contact=None,
+	lead=None,
+	get_contact_no_list=False,
+	link_doctype=None,
+	link_name=None,
+):
 	from frappe.contacts.doctype.contact.contact import get_contact_details
 	from crm.crm.doctype.lead.lead import _get_lead_contact_details
 
 	if contact:
-		out = get_contact_details(contact, get_contact_no_list=get_contact_no_list, link_doctype=link_doctype, link_name=link_name)
+		out = get_contact_details(
+			contact,
+			get_contact_no_list=get_contact_no_list,
+			link_doctype=link_doctype,
+			link_name=link_name,
+		)
 	elif lead:
 		if isinstance(lead, str):
 			lead = frappe.get_doc("Lead", lead)
