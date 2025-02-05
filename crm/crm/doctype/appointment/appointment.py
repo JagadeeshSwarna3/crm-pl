@@ -7,11 +7,12 @@ from frappe import _
 from frappe.utils.status_updater import StatusUpdater
 from frappe.utils import (
 	cint, today, getdate, get_time, get_datetime, combine_datetime, date_diff, comma_or,
-	format_datetime, formatdate, now_datetime, add_days, clean_whitespace
+	format_datetime, formatdate, now_datetime, add_days, clean_whitespace, cstr,
 )
 from frappe.contacts.doctype.address.address import get_default_address
 from frappe.contacts.doctype.contact.contact import get_default_contact, get_all_contact_nos
 from crm.crm.utils import get_contact_details, get_address_display
+from crm.crm.doctype.sales_person.sales_person import get_sales_person_from_user
 from frappe.core.doctype.sms_settings.sms_settings import enqueue_template_sms
 from frappe.core.doctype.notification_count.notification_count import get_all_notification_count
 from frappe.model.mapper import get_mapped_doc
@@ -48,6 +49,7 @@ class Appointment(StatusUpdater):
 		self.set_missing_values()
 		self.validate_previous_appointment()
 		self.validate_timeslot_validity()
+		self.validate_sales_person_self()
 		self.validate_sales_person_availability()
 		self.validate_timeslot_availability()
 		self.clean_remarks()
@@ -57,6 +59,7 @@ class Appointment(StatusUpdater):
 		if self.status not in ["Closed", "Rescheduled"]:
 			self.set_missing_values_after_submit()
 
+		self.validate_sales_person_self()
 		self.validate_sales_person_mandatory()
 		self.validate_sales_person_availability()
 		self.clean_remarks()
@@ -104,6 +107,7 @@ class Appointment(StatusUpdater):
 		self.set_missing_duration()
 		self.set_scheduled_date_time()
 		self.set_customer_details()
+		self.set_sales_person()
 
 	def set_missing_values_after_submit(self):
 		self.set_customer_details()
@@ -149,6 +153,10 @@ class Appointment(StatusUpdater):
 		for k, v in customer_details.items():
 			if self.meta.has_field(k) and (not self.get(k) or k in self.force_party_fields):
 				self.set(k, v)
+
+	def set_sales_person(self):
+		if not self.get('sales_person') and self.is_new() and self.docstatus == 0:
+			self.sales_person = get_sales_person_from_user()
 
 	def clean_remarks(self):
 		fields = ['remarks']
@@ -208,6 +216,26 @@ class Appointment(StatusUpdater):
 			frappe.msgprint(_('Time slot {0} is already booked by {1} other appointments for appointment type {2}').format(
 				timeslot_str, frappe.bold(appointments_in_slot), self.appointment_type
 			), raise_exception=appointment_type_doc.validate_availability)
+
+	def validate_sales_person_self(self):
+		if not self.appointment_type:
+			return
+
+		# check if user is sales person
+		user_sales_person = get_sales_person_from_user()
+		if not user_sales_person:
+			return
+
+		# check if not changed
+		if not self.is_new() and cstr(self.sales_person) == cstr(self.db_get("sales_person")):
+			return
+
+		sales_person_validate_self = frappe.get_cached_value("Appointment Type", self.appointment_type, "sales_person_validate_self")
+		if not sales_person_validate_self:
+			return
+
+		if self.sales_person and self.sales_person != user_sales_person:
+			frappe.throw(_("You are not allowed to select another {0}").format(self.meta.get_label("sales_person")))
 
 	def validate_sales_person_mandatory(self):
 		if not self.appointment_type:

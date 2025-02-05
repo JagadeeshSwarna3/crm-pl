@@ -16,6 +16,7 @@
   "validate_past_timeslot",
   "validate_sales_person_availability",
   "sales_person_mandatory",
+  "sales_person_validate_self",
   "availability_section",
   "number_of_agents",
   "sales_persons",
@@ -134,10 +135,16 @@
    "fieldname": "validate_past_timeslot",
    "fieldtype": "Check",
    "label": "Validate Past Time Slot Selection"
+  },
+  {
+   "default": "0",
+   "fieldname": "sales_person_validate_self",
+   "fieldtype": "Check",
+   "label": "Do not allow Sales Person to select another Sales Person"
   }
  ],
  "links": [],
- "modified": "2024-12-10 23:27:04.804960",
+ "modified": "2025-02-05 23:25:11.676612",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment Type",

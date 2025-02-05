@@ -21,6 +21,7 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 		this.frm.trigger('set_disallow_on_submit_fields_read_only');
 		this.setup_dashboard();
 
+		this.set_sales_person_from_user();
 		this.make_appointment_slot_picker();
 	}
 
@@ -359,6 +360,18 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 			this.frm.set_df_property("customer_address", "label", __("Address"));
 			this.frm.set_df_property("contact_person", "label", __("Contact Person"));
 		}
+	}
+
+	set_sales_person_from_user() {
+		if (this.frm.doc.sales_person || !this.frm.doc.__islocal || this.frm.doc.docstatus != 0) {
+			return;
+		}
+
+		crm.utils.get_sales_person_from_user(sales_person => {
+			if (sales_person) {
+				this.frm.set_value('sales_person', sales_person);
+			}
+		});
 	}
 
 	reschedule_appointment() {
