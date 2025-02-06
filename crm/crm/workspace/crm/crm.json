@@ -291,17 +291,6 @@
   {
    "dependencies": "",
    "hidden": 0,
-   "is_query_report": 1,
-   "label": "Lead Details",
-   "link_count": 0,
-   "link_to": "Lead Details",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
    "is_query_report": 0,
    "label": "Sales Funnel",
    "link_count": 0,
@@ -424,7 +413,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-12-01 00:15:02.536080",
+ "modified": "2025-02-06 11:05:02.451972",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "CRM",
@@ -442,6 +431,9 @@
   },
   {
    "role": "Accounts User"
+  },
+  {
+   "role": "CR User"
   }
  ],
  "sequence_id": 150.0,
