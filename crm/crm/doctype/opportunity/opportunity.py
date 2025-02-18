@@ -102,6 +102,7 @@ class Opportunity(StatusUpdater):
 			self.sales_person = get_sales_person_from_user()
 
 	def set_missing_values(self):
+		self.conversion_document = frappe.get_cached_value("Opportunity Type", self.opportunity_type, "conversion_document")
 		self.set_customer_details()
 		self.set_sales_person_details()
 

@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_import": 1,
+ "allow_rename": 1,
  "autoname": "Prompt",
  "creation": "2017-10-06 12:55:43.318773",
  "doctype": "DocType",
@@ -33,11 +34,10 @@
   }
  ],
  "links": [],
- "modified": "2024-11-29 22:50:21.482097",
+ "modified": "2025-02-18 13:18:05.839275",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Opportunity Type",
- "name_case": "Title Case",
  "owner": "Administrator",
  "permissions": [
   {
