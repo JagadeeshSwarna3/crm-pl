@@ -101,7 +101,6 @@
   },
   {
    "collapsible": 1,
-   "collapsible_depends_on": "applies_to_item",
    "fieldname": "sec_applies_to",
    "fieldtype": "Section Break",
    "label": "Applies To"
@@ -173,7 +172,7 @@
   }
  ],
  "links": [],
- "modified": "2024-11-29 17:19:50.833800",
+ "modified": "2025-02-19 22:26:23.033851",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Customer Feedback",

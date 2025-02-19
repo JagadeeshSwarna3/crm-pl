@@ -285,7 +285,6 @@
    "read_only": 1
   },
   {
-   "collapsible_depends_on": "applies_to_item",
    "fieldname": "sec_applies_to",
    "fieldtype": "Section Break",
    "hidden": 1,
@@ -536,7 +535,7 @@
  "is_calendar_and_gantt": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-29 16:19:43.792870",
+ "modified": "2025-02-19 22:26:18.809156",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment",

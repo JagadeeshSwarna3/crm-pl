@@ -440,7 +440,6 @@
   },
   {
    "collapsible": 1,
-   "collapsible_depends_on": "applies_to_item",
    "fieldname": "sec_applies_to",
    "fieldtype": "Section Break",
    "hidden": 1,
@@ -501,7 +500,7 @@
  "idx": 195,
  "is_calendar_and_gantt": 1,
  "links": [],
- "modified": "2024-11-29 17:19:35.713155",
+ "modified": "2025-02-19 22:26:16.129718",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Opportunity",
