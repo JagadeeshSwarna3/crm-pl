@@ -18,7 +18,7 @@ frappe.views.calendar["Appointment"] = {
 			return "info";
 		} else if (doc.status == "Missed") {
 			return "secondary";
-		} else if (doc.status == "Closed") {
+		} else if (["Closed", "Converted"].includes(doc.status)) {
 			return "success";
 		}
 	}

@@ -23,7 +23,7 @@ frappe.listview_settings['Appointment'] = {
 			 return [__(doc.status), "blue", "status,=," + doc.status];
 		} else if (doc.status == "Missed") {
 			return [__(doc.status), "grey", "status,=," + doc.status];
-		} else if (doc.status == "Closed") {
+		} else if (["Closed", "Converted"].includes(doc.status)) {
 			return [__(doc.status), "green", "status,=," + doc.status];
 		}
 	},

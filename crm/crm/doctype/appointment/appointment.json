@@ -106,7 +106,7 @@
    "in_standard_filter": 1,
    "label": "Status",
    "no_copy": 1,
-   "options": "Draft\nOpen\nChecked In\nClosed\nRescheduled\nMissed\nCancelled",
+   "options": "Draft\nOpen\nChecked In\nClosed\nConverted\nRescheduled\nMissed\nCancelled",
    "read_only": 1,
    "reqd": 1,
    "search_index": 1
@@ -535,7 +535,7 @@
  "is_calendar_and_gantt": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-19 22:26:18.809156",
+ "modified": "2025-02-23 23:21:58.164634",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment",

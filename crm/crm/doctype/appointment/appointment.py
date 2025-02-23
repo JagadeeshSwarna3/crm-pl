@@ -56,7 +56,7 @@ class Appointment(StatusUpdater):
 		self.set_status()
 
 	def before_update_after_submit(self):
-		if self.status not in ["Closed", "Rescheduled"]:
+		if self.status not in ["Closed", "Converted", "Rescheduled"]:
 			self.set_missing_values_after_submit()
 
 		self.validate_sales_person_self()
@@ -97,7 +97,7 @@ class Appointment(StatusUpdater):
 			frappe.throw(_("Appointment For must be {0}").format(comma_or(allowed_party_types)))
 
 	def get_disallow_on_submit_fields(self):
-		if self.status in ["Closed", "Rescheduled"]:
+		if self.status in ["Closed", "Converted", "Rescheduled"]:
 			self.flags.disallow_on_submit = self.get_fields_for_disallow_on_submit(['remarks'])
 
 		return self.flags.disallow_on_submit or []
@@ -161,7 +161,7 @@ class Appointment(StatusUpdater):
 	def clean_remarks(self):
 		fields = ['remarks']
 
-		if self.status not in ["Closed", "Rescheduled"]:
+		if self.status not in ["Closed", "Converted", "Rescheduled"]:
 			fields.append('voice_of_customer')
 
 		for f in fields:
@@ -394,6 +394,8 @@ class Appointment(StatusUpdater):
 
 			if is_rescheduled:
 				self.status = "Rescheduled"
+			elif self.is_appointment_converted():
+				self.status = "Converted"
 			elif self.is_appointment_closed():
 				self.status = "Closed"
 			elif self.is_checked_in:
@@ -434,6 +436,9 @@ class Appointment(StatusUpdater):
 
 	def is_appointment_closed(self):
 		return cint(self.is_closed)
+
+	def is_appointment_converted(self):
+		return False
 
 	def get_timeslot_str(self):
 		if self.scheduled_dt == self.end_dt:

@@ -106,7 +106,7 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 					__("Set Status"));
 			}
 
-			if (this.frm.doc.status != "Closed") {
+			if (!["Closed", "Converted"].includes(this.frm.doc.status)) {
 				this.frm.add_custom_button(__('Closed'), () => this.update_status("Closed"),
 					__("Set Status"));
 			}
