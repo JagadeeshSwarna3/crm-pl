@@ -279,6 +279,7 @@
    "fieldname": "contact_mobile",
    "fieldtype": "Data",
    "label": "Mobile No",
+   "options": "Phone",
    "read_only": 1
   },
   {
@@ -464,6 +465,7 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Sales Person Mobile No",
+   "options": "Phone",
    "read_only": 1
   },
   {
@@ -500,7 +502,7 @@
  "idx": 195,
  "is_calendar_and_gantt": 1,
  "links": [],
- "modified": "2025-02-19 22:26:16.129718",
+ "modified": "2025-03-17 20:12:53.209659",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Opportunity",

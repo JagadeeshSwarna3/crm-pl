@@ -111,7 +111,8 @@
   {
    "fieldname": "contact_mobile",
    "fieldtype": "Data",
-   "label": "Mobile No"
+   "label": "Mobile No",
+   "options": "Phone"
   },
   {
    "fieldname": "column_break_qsdfn",
@@ -130,7 +131,7 @@
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-11-29 16:27:15.453339",
+ "modified": "2025-03-17 20:13:02.608728",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Sales Person",

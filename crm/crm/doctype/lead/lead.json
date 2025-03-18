@@ -210,7 +210,8 @@
    "in_standard_filter": 1,
    "label": "Mobile No (Primary)",
    "oldfieldname": "mobile_no",
-   "oldfieldtype": "Data"
+   "oldfieldtype": "Data",
+   "options": "Phone"
   },
   {
    "fieldname": "fax",
@@ -290,7 +291,8 @@
   {
    "fieldname": "mobile_no_2",
    "fieldtype": "Data",
-   "label": "Mobile No (Secondary)"
+   "label": "Mobile No (Secondary)",
+   "options": "Phone"
   },
   {
    "fieldname": "column_break_9",
@@ -412,7 +414,7 @@
  "idx": 5,
  "image_field": "image",
  "links": [],
- "modified": "2025-02-23 22:46:30.024711",
+ "modified": "2025-03-17 20:12:27.148112",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Lead",
