@@ -533,8 +533,9 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "0",
    "fieldname": "disable_automated_notifications",
-   "fieldtype": "Code",
+   "fieldtype": "Check",
    "hidden": 1,
    "label": "Disable Automated Notifications",
    "read_only": 1
@@ -543,7 +544,7 @@
  "is_calendar_and_gantt": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-19 11:40:31.909911",
+ "modified": "2025-03-19 23:28:15.392698",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment",

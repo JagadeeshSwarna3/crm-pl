@@ -151,6 +151,11 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 			reminder_status = __("Scheduled ({0})", [scheduled_reminder_str]);
 		}
 
+		let missed_count = frappe.get_notification_count(me.frm, 'Appointment Missed');
+		let missed_color = missed_count ? "green"
+			: this.can_notify('Appointment Missed') ? "yellow" : "light-gray";
+		let missed_status = frappe.get_notification_count_str(me.frm, 'Appointment Missed');
+
 		let cancellation_count = frappe.get_notification_count(me.frm, 'Appointment Cancellation');
 		let cancellation_color = cancellation_count ? "green"
 			: this.can_notify('Appointment Cancellation') ? "yellow" : "light-gray";
@@ -158,7 +163,10 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 
 		me.frm.dashboard.add_indicator(__('Appointment Confirmation: {0}', [confirmation_status]), confirmation_color);
 		me.frm.dashboard.add_indicator(__('Appointment Reminder: {0}', [reminder_status]), reminder_color);
-		if (me.frm.doc.docstatus == 2) {
+		if (me.frm.doc.status == "Missed" || missed_count) {
+			me.frm.dashboard.add_indicator(__('Appointment Missed: {0}', [missed_status]), missed_color);
+		}
+		if (me.frm.doc.docstatus == 2 || cancellation_count) {
 			me.frm.dashboard.add_indicator(__('Appointment Cancellation: {0}', [cancellation_status]), cancellation_color);
 		}
 	}

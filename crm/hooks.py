@@ -51,6 +51,9 @@ scheduler_events = {
 		"0/15 * * * *": [
 			"crm.crm.doctype.appointment.appointment.send_appointment_reminder_notifications",
 		],
+		"1/15 * * * *": [
+			"crm.crm.doctype.appointment.appointment.send_appointment_missed_notifications",
+		],
 	},
 	"daily": [
 		"crm.crm.doctype.opportunity.opportunity.auto_mark_opportunity_as_lost",

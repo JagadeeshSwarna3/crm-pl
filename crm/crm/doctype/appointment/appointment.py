@@ -14,6 +14,7 @@ from frappe.contacts.doctype.contact.contact import get_default_contact, get_all
 from crm.crm.utils import get_contact_details, get_address_display
 from crm.crm.doctype.sales_person.sales_person import get_sales_person_from_user
 from frappe.core.doctype.notification_count.notification_count import get_all_notification_count
+from frappe.email.doctype.notification.notification import has_notification
 from frappe.model.mapper import get_mapped_doc
 import datetime
 import json
@@ -477,6 +478,7 @@ class Appointment(StatusUpdater):
 			'Appointment Confirmation',
 			'Appointment Reminder',
 			'Appointment Cancellation',
+			'Appointment Missed',
 		]
 
 		can_notify = frappe._dict()
@@ -505,7 +507,7 @@ class Appointment(StatusUpdater):
 				if throw:
 					frappe.throw(_("Cannot send Appointment Cancellation notification because Appointment is not cancelled"))
 				return False
-		elif notification_type != 'Custom Message':
+		else:
 			# Must be submitted
 			if self.docstatus != 1:
 				if throw:
@@ -517,6 +519,14 @@ class Appointment(StatusUpdater):
 			if self.status != "Open":
 				if throw:
 					frappe.throw(_("Cannot send {0} notification because Appointment status is not 'Open'")
+						.format(notification_type))
+				return False
+
+		# Must be Missed
+		if notification_type == "Appointment Missed":
+			if self.status != "Missed":
+				if throw:
+					frappe.throw(_("Cannot send {0} notification because Appointment status is not 'Missed'")
 						.format(notification_type))
 				return False
 
@@ -551,6 +561,10 @@ class Appointment(StatusUpdater):
 	def send_appointment_reminder_notification(self):
 		if not self.disable_automated_notifications:
 			self.run_method("notify_appointment_reminder")
+
+	def send_appointment_missed_notification(self):
+		if not self.disable_automated_notifications:
+			self.run_method("notify_appointment_missed")
 
 
 @frappe.whitelist()
@@ -780,13 +794,40 @@ def send_appointment_reminder_notifications():
 	frappe.db.set_global("appointment_reminder_notification_last_sent_date", reminder_date)
 
 
-def automated_reminder_enabled():
-	from frappe.email.doctype.notification.notification import has_notification
+@frappe.whitelist()
+def send_appointment_missed_notifications():
+	if not automated_missed_notification_enabled():
+		return
 
-	if has_notification("Appointment", "Appointment Reminder"):
-		return True
-	else:
-		return False
+	# Do not send until reminder scheduled time has passed
+	now_dt = now_datetime()
+	notification_date = getdate(now_dt)
+	notification_dt = get_appointment_reminders_scheduled_time(notification_date)
+	if now_dt < notification_dt:
+		return
+
+	notification_last_sent_date = frappe.db.get_global("appointment_missed_notification_last_sent_date")
+	if notification_last_sent_date and getdate(notification_last_sent_date) >= notification_date:
+		return
+
+	appointments_to_notify = get_appointments_for_missed_notification(notification_date)
+
+	for name in appointments_to_notify:
+		doc = frappe.get_doc("Appointment", name)
+		doc.send_appointment_missed_notification()
+
+	frappe.db.set_global("appointment_missed_notification_last_sent_date", notification_date)
+
+
+def automated_reminder_enabled():
+	return has_notification("Appointment", "Appointment Reminder")
+
+
+def automated_missed_notification_enabled():
+	return (
+		has_notification("Appointment", "Appointment Missed")
+		and cint(frappe.get_cached_value("Appointment Booking Settings", None, "auto_mark_missed_days")) > 0
+	)
 
 
 def get_appointments_for_reminder_notification(reminder_date=None, appointments=None):
@@ -836,6 +877,43 @@ def get_appointments_for_reminder_notification(reminder_date=None, appointments=
 	})
 
 	return appointments_to_remind
+
+
+def get_appointments_for_missed_notification(notification_date=None, appointments=None):
+	appointment_settings = frappe.get_cached_doc("Appointment Booking Settings", None)
+
+	notification_date = getdate(notification_date)
+
+	auto_mark_missed_days = cint(appointment_settings.auto_mark_missed_days)
+	if auto_mark_missed_days <= 0:
+		return []
+
+	appointment_date = add_days(notification_date, -auto_mark_missed_days)
+
+	if appointments and isinstance(appointments, str):
+		appointments = [appointments]
+
+	appointments_condition = " and a.name in %(appointments)s" if appointments else ""
+
+	appointments_to_notify = frappe.db.sql_list("""
+		select a.name
+		from `tabAppointment` a
+		left join `tabNotification Count` n on n.reference_doctype = 'Appointment' and n.reference_name = a.name
+			and n.notification_type = 'Appointment Missed'
+		where a.docstatus = 1
+			and a.status = 'Missed'
+			and a.scheduled_date = %(appointment_date)s
+			and a.disable_automated_notifications = 0
+			and a.confirmation_dt < a.scheduled_dt
+			and n.last_scheduled_dt is null
+			and n.last_sent_dt is null
+			{0}
+	""".format(appointments_condition), {
+		'appointment_date': appointment_date,
+		'appointments': appointments,
+	})
+
+	return appointments_to_notify
 
 
 def get_appointment_reminders_scheduled_time(reminder_date=None):
