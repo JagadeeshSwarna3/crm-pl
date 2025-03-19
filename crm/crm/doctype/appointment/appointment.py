@@ -13,7 +13,6 @@ from frappe.contacts.doctype.address.address import get_default_address
 from frappe.contacts.doctype.contact.contact import get_default_contact, get_all_contact_nos
 from crm.crm.utils import get_contact_details, get_address_display
 from crm.crm.doctype.sales_person.sales_person import get_sales_person_from_user
-from frappe.core.doctype.sms_settings.sms_settings import enqueue_template_sms
 from frappe.core.doctype.notification_count.notification_count import get_all_notification_count
 from frappe.model.mapper import get_mapped_doc
 import datetime
@@ -104,6 +103,7 @@ class Appointment(StatusUpdater):
 
 	def set_missing_values(self):
 		self.set_previous_appointment_details()
+		self.set_disable_automated_notifications()
 		self.set_missing_duration()
 		self.set_scheduled_date_time()
 		self.set_customer_details()
@@ -117,6 +117,12 @@ class Appointment(StatusUpdater):
 			self.previous_appointment_dt = frappe.db.get_value("Appointment", self.previous_appointment, "scheduled_dt")
 		else:
 			self.previous_appointment_dt = None
+
+	def set_disable_automated_notifications(self):
+		if self.appointment_source:
+			self.disable_automated_notifications = frappe.get_cached_value("Appointment Source", self.appointment_source, "disable_automated_notifications")
+		else:
+			self.disable_automated_notifications = 0
 
 	def set_missing_duration(self):
 		if self.get('appointment_type'):
@@ -466,13 +472,6 @@ class Appointment(StatusUpdater):
 		else:
 			return ""
 
-	def get_sms_args(self, notification_type=None, child_doctype=None, child_name=None):
-		return frappe._dict({
-			'receiver_list': [self.contact_mobile],
-			'party_doctype': self.appointment_for,
-			'party': self.party_name
-		})
-
 	def set_can_notify_onload(self):
 		notification_types = [
 			'Appointment Confirmation',
@@ -500,11 +499,6 @@ class Appointment(StatusUpdater):
 			return get_appointment_reminders_scheduled_time(reminder_date)
 
 	def validate_notification(self, notification_type=None, child_doctype=None, child_name=None, throw=False):
-		if not notification_type:
-			if throw:
-				frappe.throw(_("Notification Type is mandatory"))
-			return False
-
 		if notification_type == 'Appointment Cancellation':
 			# Must be cancelled
 			if self.docstatus != 2:
@@ -547,20 +541,16 @@ class Appointment(StatusUpdater):
 			doc.notify_update()
 
 	def send_appointment_confirmation_notification(self):
-		if not self.dont_send_automated_notification():
-			enqueue_template_sms(self, notification_type="Appointment Confirmation")
+		if not self.disable_automated_notifications:
+			self.run_method("notify_appointment_confirmation")
 
 	def send_appointment_cancellation_notification(self):
-		if not self.dont_send_automated_notification():
-			enqueue_template_sms(self, notification_type="Appointment Cancellation")
+		if not self.disable_automated_notifications:
+			self.run_method("notify_appointment_cancellation")
 
 	def send_appointment_reminder_notification(self):
-		if not self.dont_send_automated_notification():
-			enqueue_template_sms(self, notification_type="Appointment Reminder")
-
-	def dont_send_automated_notification(self):
-		return cint(frappe.get_cached_value("Appointment Source", self.appointment_source,
-			"disable_automated_notifications"))
+		if not self.disable_automated_notifications:
+			self.run_method("notify_appointment_reminder")
 
 
 @frappe.whitelist()
@@ -791,10 +781,9 @@ def send_appointment_reminder_notifications():
 
 
 def automated_reminder_enabled():
-	from frappe.core.doctype.sms_settings.sms_settings import is_automated_sms_enabled
-	from frappe.core.doctype.sms_template.sms_template import has_automated_sms_template
+	from frappe.email.doctype.notification.notification import has_notification
 
-	if is_automated_sms_enabled() and has_automated_sms_template("Appointment", "Appointment Reminder"):
+	if has_notification("Appointment", "Appointment Reminder"):
 		return True
 	else:
 		return False
@@ -826,15 +815,16 @@ def get_appointments_for_reminder_notification(reminder_date=None, appointments=
 		select a.name
 		from `tabAppointment` a
 		left join `tabNotification Count` n on n.reference_doctype = 'Appointment' and n.reference_name = a.name
-			and n.notification_type = 'Appointment Reminder' and n.notification_medium = 'SMS'
+			and n.notification_type = 'Appointment Reminder'
 		where a.docstatus = 1
 			and a.status = 'Open'
 			and a.scheduled_date = %(appointment_date)s
+			and a.disable_automated_notifications = 0
 			and %(reminder_dt)s < a.scheduled_dt
 			and %(now_dt)s < a.scheduled_dt
 			and TIMESTAMPDIFF(MINUTE, a.confirmation_dt, %(reminder_dt)s) >= %(required_minutes)s
 			and n.last_scheduled_dt is null
-			and (n.last_sent_dt is null or DATE(n.last_sent_dt) != %(reminder_date)s)
+			and n.last_sent_dt is null
 			{0}
 	""".format(appointments_condition), {
 		'appointment_date': appointment_date,

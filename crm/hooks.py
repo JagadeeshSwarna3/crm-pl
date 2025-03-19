@@ -47,9 +47,11 @@ fixtures = [
 ]
 
 scheduler_events = {
-	"all": [
-		"crm.crm.doctype.appointment.appointment.send_appointment_reminder_notifications",
-	],
+	"cron": {
+		"0/15 * * * *": [
+			"crm.crm.doctype.appointment.appointment.send_appointment_reminder_notifications",
+		],
+	},
 	"daily": [
 		"crm.crm.doctype.opportunity.opportunity.auto_mark_opportunity_as_lost",
 		"crm.crm.doctype.appointment.appointment.auto_mark_missed",

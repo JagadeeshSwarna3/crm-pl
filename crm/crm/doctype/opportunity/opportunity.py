@@ -8,8 +8,6 @@ from frappe.model.mapper import get_mapped_doc
 from frappe.email.inbox import link_communication_to_document
 from frappe.contacts.doctype.address.address import get_default_address
 from frappe.contacts.doctype.contact.contact import get_default_contact
-from frappe.core.doctype.sms_settings.sms_settings import enqueue_template_sms
-from frappe.core.doctype.notification_count.notification_count import get_all_notification_count
 from frappe.utils.status_updater import StatusUpdater
 from frappe.model.document import Document
 from crm.crm.doctype.sales_person.sales_person import get_sales_person_from_user
@@ -35,10 +33,6 @@ class Opportunity(StatusUpdater):
 	def get_feed(self):
 		return _("From {0}").format(self.get("customer_name") or self.get('party_name'))
 
-	def onload(self):
-		self.set_can_notify_onload()
-		self.set_onload('notification_count', get_all_notification_count(self.doctype, self.name))
-
 	def validate(self):
 		self.set_missing_values()
 		self.validate_contact_no()
@@ -49,7 +43,6 @@ class Opportunity(StatusUpdater):
 
 	def after_insert(self):
 		self.update_lead_status()
-		self.send_opportunity_greeting()
 
 	def after_delete(self):
 		self.update_lead_status(status="Interested")
@@ -174,40 +167,6 @@ class Opportunity(StatusUpdater):
 		if follow_up:
 			follow_up[0].contact_date = getdate(contact_date)
 			return follow_up[0]
-
-	def get_sms_args(self, notification_type=None, child_doctype=None, child_name=None):
-		return frappe._dict({
-			'receiver_list': [self.contact_mobile or self.contact_phone],
-			'party_doctype': self.opportunity_from,
-			'party': self.party_name
-		})
-
-	def set_can_notify_onload(self):
-		notification_types = [
-			'Opportunity Greeting',
-		]
-
-		can_notify = frappe._dict()
-		for notification_type in notification_types:
-			can_notify[notification_type] = self.validate_notification(notification_type, throw=False)
-
-		self.set_onload('can_notify', can_notify)
-
-	def validate_notification(self, notification_type=None, child_doctype=None, child_name=None, throw=False):
-		if not notification_type:
-			if throw:
-				frappe.throw(_("Notification Type is mandatory"))
-			return False
-
-		if self.status in {"Lost", "Closed"}:
-			if throw:
-				frappe.throw(_("Cannot send {0} notification because Opportunity is {1}").format(notification_type, self.status))
-			return False
-
-		return True
-
-	def send_opportunity_greeting(self):
-		enqueue_template_sms(self, notification_type="Opportunity Greeting")
 
 	@frappe.whitelist()
 	def set_is_lost(self, is_lost, lost_reasons_list=None, detailed_reason=None):

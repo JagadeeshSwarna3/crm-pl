@@ -82,7 +82,11 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 	}
 
 	setup_buttons() {
-		this.setup_notification_buttons();
+		if (!this.frm.doc.__islocal) {
+			this.frm.page.add_menu_item(__('Send SMS'), () => {
+				this.send_sms();
+			});
+		}
 
 		if (this.frm.doc.calendar_event) {
 			this.frm.add_custom_button(__(this.frm.doc.calendar_event), () => {
@@ -122,38 +126,6 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 		}
 	}
 
-	setup_notification_buttons() {
-		if(this.frm.doc.docstatus === 1) {
-			if (this.can_notify("Appointment Confirmation")) {
-				let confirmation_count = frappe.get_notification_count(this.frm, 'Appointment Confirmation', 'SMS');
-				let label = __("Appointment Confirmation{0}", [confirmation_count ? " (Resend)" : ""]);
-				this.frm.add_custom_button(label, () => this.send_sms('Appointment Confirmation'),
-					__("Notify"));
-			}
-
-			if (this.can_notify("Appointment Reminder")) {
-				let reminder_count = frappe.get_notification_count(this.frm, 'Appointment Reminder', 'SMS');
-				let label = __("Appointment Reminder{0}", [reminder_count ? " (Resend)" : ""]);
-				this.frm.add_custom_button(label, () => this.send_sms('Appointment Reminder'),
-					__("Notify"));
-			}
-		}
-
-		if (this.frm.doc.docstatus === 2) {
-			if (this.can_notify("Appointment Cancellation")) {
-				let cancellation_count = frappe.get_notification_count(this.frm, 'Appointment Cancellation', 'SMS');
-				let label = __("Appointment Cancellation{0}", [cancellation_count ? " (Resend)" : ""]);
-				this.frm.add_custom_button(label, () => this.send_sms('Appointment Cancellation'),
-					__("Notify"));
-			}
-		}
-
-		if (this.frm.doc.docstatus != 0) {
-			this.frm.add_custom_button(__("Custom Message"), () => this.send_sms('Custom Message'),
-				__("Notify"));
-		}
-	}
-
 	setup_dashboard() {
 		if (this.frm.doc.docstatus == 0) {
 			return;
@@ -162,30 +134,27 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 		let me = this;
 
 		// Notification Status
-		let confirmation_count = frappe.get_notification_count(me.frm, 'Appointment Confirmation', 'SMS');
+		let confirmation_count = frappe.get_notification_count(me.frm, 'Appointment Confirmation');
 		let confirmation_color = confirmation_count ? "green"
 			: this.can_notify('Appointment Confirmation') ? "yellow" : "light-gray";
-		let confirmation_status = confirmation_count ? __("{0} SMS", [confirmation_count])
-			: __("Not Sent");
+		let confirmation_status = frappe.get_notification_count_str(me.frm, 'Appointment Confirmation');
 
-		let reminder_count = frappe.get_notification_count(me.frm, 'Appointment Reminder', 'SMS');
-		let reminder_status = __("Not Sent");
+		let reminder_count = frappe.get_notification_count(me.frm, 'Appointment Reminder');
+		let reminder_status = frappe.get_notification_count_str(me.frm, 'Appointment Reminder');
 		let reminder_color = "light-gray";
 
 		if (reminder_count) {
 			reminder_color = "green";
-			reminder_status = __("{0} SMS", [reminder_count]);
 		} else if (me.frm.doc.__onload && me.frm.doc.__onload.scheduled_reminder) {
 			let scheduled_reminder_str = frappe.datetime.str_to_user(me.frm.doc.__onload.scheduled_reminder);
 			reminder_color = "blue";
 			reminder_status = __("Scheduled ({0})", [scheduled_reminder_str]);
 		}
 
-		let cancellation_count = frappe.get_notification_count(me.frm, 'Appointment Cancellation', 'SMS');
+		let cancellation_count = frappe.get_notification_count(me.frm, 'Appointment Cancellation');
 		let cancellation_color = cancellation_count ? "green"
 			: this.can_notify('Appointment Cancellation') ? "yellow" : "light-gray";
-		let cancellation_status = cancellation_count ? __("{0} SMS", [cancellation_count])
-			: __("Not Sent");
+		let cancellation_status = frappe.get_notification_count_str(me.frm, 'Appointment Cancellation');
 
 		me.frm.dashboard.add_indicator(__('Appointment Confirmation: {0}', [confirmation_status]), confirmation_color);
 		me.frm.dashboard.add_indicator(__('Appointment Reminder: {0}', [reminder_status]), reminder_color);

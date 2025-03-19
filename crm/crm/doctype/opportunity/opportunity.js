@@ -19,7 +19,6 @@ crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 		this.update_dynamic_fields();
 		this.set_sales_person_from_user();
 		this.setup_buttons();
-		this.setup_dashboard();
 	}
 
 	setup_buttons() {
@@ -27,7 +26,9 @@ crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 			if (this.frm.perm[0].write) {
 				this.frm.add_custom_button(__("Submit Communication"), () => this.submit_communication());
 
-				this.setup_notification_buttons();
+				this.frm.page.add_menu_item(__('Send SMS'), () => {
+					this.send_sms();
+				});
 
 				if (!["Lost", "Closed", "Converted"].includes(this.frm.doc.status)) {
 					this.frm.add_custom_button(__("Lost"), () => {
@@ -67,22 +68,6 @@ crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 		}
 	}
 
-	setup_notification_buttons() {
-		if (this.frm.is_new()) {
-			return
-		}
-
-		if (this.can_notify("Opportunity Greeting")) {
-			let confirmation_count = frappe.get_notification_count(this.frm, 'Opportunity Greeting', 'SMS');
-			let label = __("Opportunity Greeting{0}", [confirmation_count ? " (Resend)" : ""]);
-			this.frm.add_custom_button(label, () => this.send_sms('Opportunity Greeting'),
-				__("Notify"));
-		}
-
-		this.frm.add_custom_button(__("Custom Message"), () => this.send_sms('Custom Message'),
-			__("Notify"));
-	}
-
 	setup_queries() {
 		let me = this;
 
@@ -104,21 +89,6 @@ crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 			this.frm.set_value("opportunity_from", allowed_party_types[0]);
 			this.frm.set_df_property("opportunity_from", "hidden", 1);
 		}
-	}
-
-	setup_dashboard() {
-		if (this.frm.is_new()) {
-			return
-		}
-
-		this.frm.dashboard.stats_area_row.empty();
-
-		let reminder_count = frappe.get_notification_count(this.frm, 'Opportunity Greeting', 'SMS');
-		let reminder_status = reminder_count ? __("{0} SMS", [reminder_count]) : __("Not Sent");
-		let reminder_color = reminder_count ? "green"
-			: this.can_notify('Opportunity Greeting') ? "yellow" : "grey";
-
-		this.frm.dashboard.add_indicator(__('Opportunity Greeting: {0}', [reminder_status]), reminder_color);
 	}
 
 	update_dynamic_fields() {
@@ -320,14 +290,6 @@ crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 			method: "crm.crm.doctype.opportunity.opportunity.make_appointment",
 			frm: this.frm
 		});
-	}
-
-	can_notify(what) {
-		if (this.frm.doc.__onload && this.frm.doc.__onload.can_notify) {
-			return this.frm.doc.__onload.can_notify[what];
-		} else {
-			return false;
-		}
 	}
 
 	send_sms(notification_type) {

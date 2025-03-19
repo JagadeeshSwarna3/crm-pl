@@ -10,6 +10,7 @@
   "appointment_type",
   "column_break_3",
   "appointment_source",
+  "disable_automated_notifications",
   "column_break_6",
   "opportunity",
   "amended_from",
@@ -530,12 +531,19 @@
   {
    "fieldname": "column_break_cmhw",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "disable_automated_notifications",
+   "fieldtype": "Code",
+   "hidden": 1,
+   "label": "Disable Automated Notifications",
+   "read_only": 1
   }
  ],
  "is_calendar_and_gantt": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-23 23:21:58.164634",
+ "modified": "2025-03-19 11:40:31.909911",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment",

@@ -37,7 +37,7 @@ class AppointmentSheetReport(object):
 			select {select_fields_str}
 			from `tabAppointment` a
 			left join `tabNotification Count` n on n.reference_doctype = 'Appointment' and n.reference_name = a.name
-				and n.notification_type = 'Appointment Reminder' and n.notification_medium = 'SMS'
+				and n.notification_type = 'Appointment Reminder'
 			where a.docstatus = 1 {conditions_str}
 			group by a.name
 			order by a.scheduled_dt, a.creation
