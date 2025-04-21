@@ -65,6 +65,9 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 			if (!this.frm.is_new()) {
 				filters["appointment"] = this.frm.doc.name;
 			}
+			if (this.frm.doc.vehicle_workshop) {
+				filters["vehicle_workshop"] = this.frm.doc.vehicle_workshop;
+			}
 
 			return {
 				query: "crm.crm.doctype.appointment.appointment.appointment_sales_person_query",
