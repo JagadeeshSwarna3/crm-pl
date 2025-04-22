@@ -986,7 +986,7 @@ def appointment_sales_person_query(doctype, txt, searchfield, start, page_len, f
 
 	appointment_type = filters.pop("appointment_type", None)
 	allowed_sales_persons = get_allowed_sales_persons(appointment_type)
-	vehicle_workshop = filters.pop("vehicle_workshop", None)
+
 	appointment = filters.pop("appointment", None)
 	scheduled_dt = filters.pop("scheduled_dt", None)
 	end_dt = filters.pop("end_dt", None)
@@ -1012,10 +1012,10 @@ def appointment_sales_person_query(doctype, txt, searchfield, start, page_len, f
 
 	if allowed_sales_persons:
 		sales_person_conditions = "`tabSales Person`.name in %(allowed_sales_persons)s"
+		fcond = ""
 	else:
 		sales_person_conditions = "`tabSales Person`.is_group = 0"
-		if vehicle_workshop:
-			sales_person_conditions += f" AND `tabSales Person`.vehicle_workshop = '{vehicle_workshop}'"
+		fcond = get_filters_cond(doctype, filters, conditions)
 
 	out = frappe.db.sql("""
 		select `tabSales Person`.name {availability_field} {fields}
@@ -1032,7 +1032,7 @@ def appointment_sales_person_query(doctype, txt, searchfield, start, page_len, f
 		'fields': fields_str,
 		"scond": searchfields,
 		'key': searchfield,
-		'fcond': get_filters_cond(doctype, filters, conditions),
+		'fcond': fcond,
 		'mcond': get_match_cond(doctype),
 		'sales_person_conditions': sales_person_conditions,
 		'availability_field': availability_field,
