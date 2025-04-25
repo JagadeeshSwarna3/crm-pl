@@ -81,7 +81,7 @@ class SMSCenter(Document):
 		receiver_list = []
 		for r in receivers:
 			name, number = r
-			number = clean_receiver_number(number)
+			number = clean_receiver_number(number, format_sms=True)
 
 			if not number or number in numbers_visited:
 				continue
