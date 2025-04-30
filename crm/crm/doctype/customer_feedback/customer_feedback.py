@@ -19,13 +19,7 @@ class CustomerFeedback(Document):
 		self.set_title()
 		self.set_status()
 		self.get_previous_values()
-		self.set_reference_from_project()
-		if self.project and not (self.reference_doctype and self.reference_name):
-			self.set_reference_from_project()
-
-	def set_reference_from_project(self):
-		self.reference_doctype = "Project"
-		self.reference_name = self.project
+		validate_feedback_fields(self)
 
 	def on_update(self):
 		self.update_communication()
@@ -214,19 +208,19 @@ def make_feedback_doc(reference_doctype, reference_name):
 		},
 	}, postprocess=postprocess)
 
-def validate(doc, method=None):
+def validate_feedback_fields(doc, method=None):
     if doc.feedback_sub_type:
         valid = frappe.db.exists("Feedback Sub Type", {
-			"name": doc.feedback_sub_type,
-			"feedback_type": doc.feedback_type
-		})
+            "name": doc.feedback_sub_type,
+            "feedback_type": doc.feedback_type
+        })
         if not valid:
-            frappe.throw("Selected Feedback Sub Type is not valid for the selected Feedback Type.")
+            frappe.throw(frappe._("Selected Feedback Sub Type is not valid for the selected Feedback Type."))
 
     if doc.feedback_status:
         valid_status = frappe.db.exists("Feedback Status", {
-			"name": doc.feedback_status,
-			"feedback_type": doc.feedback_type
-		})
+            "name": doc.feedback_status,
+            "feedback_type": doc.feedback_type
+        })
         if not valid_status:
-            frappe.throw("Selected Feedback Status is not valid for the selected Feedback Type.")
+            frappe.throw(frappe._("Selected Feedback Status is not valid for the selected Feedback Type."))

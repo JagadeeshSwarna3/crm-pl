@@ -32,9 +32,6 @@ doc_events = {
 	"Email Unsubscribe": {
 		"after_insert": "crm.crm.doctype.email_campaign.email_campaign.unsubscribe_recipient"
 	},
-	"Customer Feedback": {
-        "validate": "crm.crm.doctype.customer_feedback.customer_feedback.validate"
-    }
 }
 
 fixtures = [
