@@ -186,6 +186,8 @@
   {
    "fieldname": "feedback_type",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Feedback Type",
    "options": "Feedback Type"
   },
@@ -199,6 +201,7 @@
   {
    "fieldname": "feedback_status",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Feedback Status",
    "mandatory_depends_on": "eval:doc.feedback_status_mandatory",
    "options": "Feedback Status"
@@ -225,7 +228,7 @@
   }
  ],
  "links": [],
- "modified": "2025-04-30 23:59:18.555362",
+ "modified": "2025-05-01 00:38:18.601719",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Customer Feedback",
