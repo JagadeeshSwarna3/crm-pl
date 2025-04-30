@@ -19,7 +19,7 @@ class CustomerFeedback(Document):
 		self.set_title()
 		self.set_status()
 		self.get_previous_values()
-		validate_feedback_fields(self)
+		self.validate_feedback_fields()
 
 	def on_update(self):
 		self.update_communication()
@@ -126,6 +126,23 @@ class CustomerFeedback(Document):
 		communication_doc.flags.ignore_permissions = True
 		return communication_doc
 
+	def validate_feedback_fields(self):
+		if self.feedback_sub_type:
+			valid = frappe.db.exists("Feedback Sub Type", {
+				"name": self.feedback_sub_type,
+				"feedback_type": self.feedback_type
+			})
+			if not valid:
+				frappe.throw(frappe._("Selected Feedback Sub Type is not valid for the selected Feedback Type."))
+
+		if self.feedback_status:
+			valid_status = frappe.db.exists("Feedback Status", {
+				"name": self.feedback_status,
+				"feedback_type": self.feedback_type
+			})
+			if not valid_status:
+				frappe.throw(frappe._("Selected Feedback Status is not valid for the selected Feedback Type."))
+
 
 @frappe.whitelist()
 def get_customer_name(feedback_from, party_name):
@@ -207,20 +224,3 @@ def make_feedback_doc(reference_doctype, reference_name):
 			}
 		},
 	}, postprocess=postprocess)
-
-def validate_feedback_fields(doc, method=None):
-    if doc.feedback_sub_type:
-        valid = frappe.db.exists("Feedback Sub Type", {
-            "name": doc.feedback_sub_type,
-            "feedback_type": doc.feedback_type
-        })
-        if not valid:
-            frappe.throw(frappe._("Selected Feedback Sub Type is not valid for the selected Feedback Type."))
-
-    if doc.feedback_status:
-        valid_status = frappe.db.exists("Feedback Status", {
-            "name": doc.feedback_status,
-            "feedback_type": doc.feedback_type
-        })
-        if not valid_status:
-            frappe.throw(frappe._("Selected Feedback Status is not valid for the selected Feedback Type."))

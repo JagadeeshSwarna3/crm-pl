@@ -22,6 +22,22 @@ crm.CustomerFeedback = class CustomerFeedback extends frappe.ui.form.Controller 
 				}
 			}
 		});
+
+		me.frm.set_query('feedback_sub_type', () => {
+			return {
+				filters: {
+					feedback_type: ['in', [this.frm.doc.feedback_type, '']]
+				}
+			};
+		});
+
+		me.frm.set_query('feedback_status', () => {
+			return {
+				filters: {
+					feedback_type: ['in', [this.frm.doc.feedback_type, '']]
+				}
+			};
+		});
 	}
 
 	set_feedback_from() {
@@ -91,43 +107,6 @@ crm.CustomerFeedback = class CustomerFeedback extends frappe.ui.form.Controller 
 
 		this.frm.set_value('feedback_sub_type', null);
 		this.frm.set_value('feedback_status', null);
-
-		this.frm.set_query('feedback_sub_type', () => {
-			return {
-				filters: {
-					feedback_type: ['in', [this.frm.doc.feedback_type, '']]
-				}
-			};
-		});
-
-		this.frm.set_query('feedback_status', () => {
-			return {
-				filters: {
-					feedback_type: ['in', [this.frm.doc.feedback_type, '']]
-				}
-			};
-		});
-	}
-
-	project() {
-		this.get_project_details();
-	}
-
-	get_project_details() {
-		if (this.frm.doc.project) {
-			return frappe.call({
-				method: 'erpnext.projects.doctype.project.project.get_project_details',
-				args: {
-					project: this.frm.doc.project,
-					doctype: this.frm.doc.doctype,
-				},
-				callback: (r) => {
-					if (r.message) {
-						this.frm.set_value(r.message);
-					}
-				}
-			});
-		}
 	}
 }
 
