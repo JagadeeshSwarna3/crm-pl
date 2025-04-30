@@ -10,8 +10,15 @@
   "status",
   "feedback_from",
   "party_name",
-  "column_break_2",
   "customer_name",
+  "column_break_2",
+  "feedback_type",
+  "feedback_sub_type",
+  "feedback_sub_type_mandatory",
+  "column_break_vnzw",
+  "feedback_source",
+  "feedback_status",
+  "feedback_status_mandatory",
   "section_break_1",
   "reference_doctype",
   "column_break_1",
@@ -169,10 +176,56 @@
    "options": "feedback_from",
    "reqd": 1,
    "set_only_once": 1
+  },
+  {
+   "fieldname": "feedback_source",
+   "fieldtype": "Link",
+   "label": "Feedback Source",
+   "options": "Feedback Source"
+  },
+  {
+   "fieldname": "feedback_type",
+   "fieldtype": "Link",
+   "label": "Feedback Type",
+   "options": "Feedback Type"
+  },
+  {
+   "fieldname": "feedback_sub_type",
+   "fieldtype": "Link",
+   "label": "Feedback Sub Type",
+   "mandatory_depends_on": "eval:doc.feedback_sub_type_mandatory",
+   "options": "Feedback Sub Type"
+  },
+  {
+   "fieldname": "feedback_status",
+   "fieldtype": "Link",
+   "label": "Feedback Status",
+   "mandatory_depends_on": "eval:doc.feedback_status_mandatory",
+   "options": "Feedback Status"
+  },
+  {
+   "default": "0",
+   "fetch_from": "feedback_type.feedback_sub_type_mandatory",
+   "fieldname": "feedback_sub_type_mandatory",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Feedback Sub Type Mandatory"
+  },
+  {
+   "default": "0",
+   "fetch_from": "feedback_type.feedback_status_mandatory",
+   "fieldname": "feedback_status_mandatory",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Feedback Status Mandatory"
+  },
+  {
+   "fieldname": "column_break_vnzw",
+   "fieldtype": "Column Break"
   }
  ],
  "links": [],
- "modified": "2025-02-19 22:26:23.033851",
+ "modified": "2025-04-30 23:59:18.555362",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Customer Feedback",

@@ -22,6 +22,22 @@ crm.CustomerFeedback = class CustomerFeedback extends frappe.ui.form.Controller 
 				}
 			}
 		});
+
+		me.frm.set_query('feedback_sub_type', () => {
+			return {
+				filters: {
+					feedback_type: this.frm.doc.feedback_type
+				}
+			};
+		});
+
+		me.frm.set_query('feedback_status', () => {
+			return {
+				filters: {
+					feedback_type: ['in', [this.frm.doc.feedback_type, '']]
+				}
+			};
+		});
 	}
 
 	set_feedback_from() {
@@ -83,6 +99,13 @@ crm.CustomerFeedback = class CustomerFeedback extends frappe.ui.form.Controller 
 					this.frm.refresh_fields();
 				}
 			});
+		}
+	}
+
+	feedback_type() {
+		if (this.frm.doc.feedback_type) {
+			this.frm.set_value('feedback_sub_type', null);
+			this.frm.set_value('feedback_status', null);
 		}
 	}
 }

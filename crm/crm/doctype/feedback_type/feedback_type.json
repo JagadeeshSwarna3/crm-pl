@@ -1,0 +1,90 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:feedback_type",
+ "creation": "2025-04-25 13:17:12.325510",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "feedback_type",
+  "feedback_sub_type_mandatory",
+  "feedback_status_mandatory"
+ ],
+ "fields": [
+  {
+   "fieldname": "feedback_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Feedback Type",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "feedback_sub_type_mandatory",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Feedback Sub Type mandatory"
+  },
+  {
+   "default": "0",
+   "fieldname": "feedback_status_mandatory",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Feedback Status mandatory"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-04-25 17:31:27.562559",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Feedback Type",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User (Read Only)",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "CR User",
+   "share": 1
+  }
+ ],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
