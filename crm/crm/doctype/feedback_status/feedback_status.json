@@ -24,12 +24,12 @@
    "in_list_view": 1,
    "label": "Feedback Type",
    "options": "Feedback Type",
-   "reqd": 1
+   "reqd": 0
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-30 16:07:20.577722",
+ "modified": "2025-04-30 16:07:20.577723",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Feedback Status",

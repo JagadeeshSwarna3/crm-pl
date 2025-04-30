@@ -26,7 +26,7 @@ crm.CustomerFeedback = class CustomerFeedback extends frappe.ui.form.Controller 
 		me.frm.set_query('feedback_sub_type', () => {
 			return {
 				filters: {
-					feedback_type: ['in', [this.frm.doc.feedback_type, '']]
+					feedback_type: this.frm.doc.feedback_type
 				}
 			};
 		});
@@ -103,10 +103,10 @@ crm.CustomerFeedback = class CustomerFeedback extends frappe.ui.form.Controller 
 	}
 
 	feedback_type() {
-		if (!this.frm.doc.feedback_type) return;
-
-		this.frm.set_value('feedback_sub_type', null);
-		this.frm.set_value('feedback_status', null);
+		if (this.frm.doc.feedback_type) {
+			this.frm.set_value('feedback_sub_type', null);
+			this.frm.set_value('feedback_status', null);
+		}
 	}
 }
 

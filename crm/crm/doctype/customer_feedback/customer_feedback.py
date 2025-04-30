@@ -16,10 +16,10 @@ class CustomerFeedback(Document):
 
 	def validate(self):
 		self.set_missing_values()
+		self.validate_feedback_type()
 		self.set_title()
 		self.set_status()
 		self.get_previous_values()
-		self.validate_feedback_fields()
 
 	def on_update(self):
 		self.update_communication()
@@ -126,22 +126,40 @@ class CustomerFeedback(Document):
 		communication_doc.flags.ignore_permissions = True
 		return communication_doc
 
-	def validate_feedback_fields(self):
+	def validate_feedback_type(self):
+		if not self.feedback_type:
+			self.feedback_sub_type = None
+
+		if self.feedback_type:
+			sub_type_mandatory = frappe.get_cached_value("Feedback Type", self.feedback_type, "feedback_sub_type_mandatory")
+			if sub_type_mandatory and not self.feedback_sub_type:
+				frappe.throw(_("Feedback Sub Type is mandatory for Feedback Type {0}").format(
+					frappe.bold(self.feedback_type)
+				))
+
+			status_mandatory = frappe.get_cached_value("Feedback Type", self.feedback_type, "feedback_status_mandatory")
+			if status_mandatory and not self.feedback_status:
+				frappe.throw(_("Feedback Status is mandatory for Feedback Type {0}").format(
+					frappe.bold(self.feedback_type)
+				))
+
 		if self.feedback_sub_type:
-			valid = frappe.db.exists("Feedback Sub Type", {
-				"name": self.feedback_sub_type,
-				"feedback_type": self.feedback_type
-			})
-			if not valid:
-				frappe.throw(frappe._("Selected Feedback Sub Type is not valid for the selected Feedback Type."))
+			allowed_feedback_type = frappe.get_cached_value("Feedback Sub Type", self.feedback_sub_type, "feedback_type")
+			if allowed_feedback_type:
+				if self.feedback_type != allowed_feedback_type:
+					frappe.throw(_("Feedback Sub Type {0} can only be set for Feedback Type {1}").format(
+						frappe.bold(self.feedback_sub_type),
+						frappe.bold(allowed_feedback_type),
+					))
 
 		if self.feedback_status:
-			valid_status = frappe.db.exists("Feedback Status", {
-				"name": self.feedback_status,
-				"feedback_type": self.feedback_type
-			})
-			if not valid_status:
-				frappe.throw(frappe._("Selected Feedback Status is not valid for the selected Feedback Type."))
+			allowed_feedback_type = frappe.get_cached_value("Feedback Status", self.feedback_status, "feedback_type")
+			if allowed_feedback_type:
+				if self.feedback_type != allowed_feedback_type:
+					frappe.throw(_("Feedback Status {0} can only be set for Feedback Type {1}").format(
+						frappe.bold(self.feedback_status),
+						frappe.bold(allowed_feedback_type),
+					))
 
 
 @frappe.whitelist()

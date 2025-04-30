@@ -24,19 +24,19 @@
    "fieldname": "feedback_sub_type_mandatory",
    "fieldtype": "Check",
    "in_list_view": 1,
-   "label": "Feedback Sub Type mandatory",
-   "reqd": 1
+   "label": "Feedback Sub Type mandatory"
   },
   {
    "default": "0",
    "fieldname": "feedback_status_mandatory",
    "fieldtype": "Check",
+   "in_list_view": 1,
    "label": "Feedback Status mandatory"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-25 17:31:27.562558",
+ "modified": "2025-04-25 17:31:27.562559",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Feedback Type",

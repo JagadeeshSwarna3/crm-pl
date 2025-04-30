@@ -22,14 +22,14 @@
    "fieldname": "feedback_type",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "FeedBack Type",
+   "label": "Feedback Type",
    "options": "Feedback Type",
    "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-25 18:04:10.067092",
+ "modified": "2025-04-25 18:04:10.067093",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Feedback Sub Type",
