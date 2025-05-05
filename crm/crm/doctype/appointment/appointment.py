@@ -250,12 +250,9 @@ class Appointment(StatusUpdater):
 
 		# Check if appointment source allows non-mandatory sales person
 		if self.appointment_source:
-			try:
-				source_doc = frappe.get_cached_doc("Appointment Source", self.appointment_source)
-				if getattr(source_doc, "sales_person_non_mandatory", 0):
-					return  # Skip mandatory validation if checkbox is checked
-			except Exception:
-				pass  # Fallback to normal validation if source not found or error
+			sales_person_non_mandatory = frappe.get_cached_value("Appointment Source", self.appointment_source, "sales_person_non_mandatory")
+			if sales_person_non_mandatory:
+				return
 
 		appointment_type_doc = frappe.get_cached_doc("Appointment Type", self.appointment_type)
 		if not self.sales_person and appointment_type_doc.sales_person_mandatory:
