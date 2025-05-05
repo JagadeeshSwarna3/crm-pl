@@ -19,17 +19,18 @@
    "unique": 1
   },
   {
+   "allow_in_quick_entry": 1,
    "fieldname": "feedback_type",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Feedback Type",
-   "options": "Feedback Type",
-   "reqd": 0
+   "options": "Feedback Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-30 16:07:20.577723",
+ "modified": "2025-05-01 12:23:21.902403",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Feedback Status",
