@@ -11,7 +11,8 @@
   "section_break_wv6px",
   "details",
   "column_break_hqney",
-  "disable_automated_notifications"
+  "disable_automated_notifications",
+  "sales_person_non_mandatory"
  ],
  "fields": [
   {
@@ -40,6 +41,12 @@
    "fieldname": "disable_automated_notifications",
    "fieldtype": "Check",
    "label": "Disable Automated Notifications"
+  },
+  {
+   "default": "0",
+   "fieldname": "sales_person_non_mandatory",
+   "fieldtype": "Check",
+   "label": "Sales Person Non-Mandatory for Confirmation"
   }
  ],
  "links": [],
