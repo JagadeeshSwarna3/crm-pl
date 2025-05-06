@@ -21,7 +21,7 @@ class CustomerFeedback(Document):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.force_party_fields = [
-			'contact_person', 'contact_display', 'contact_email', 'contact_mobile', 'contact_phone'
+			'contact_display', 'contact_email', 'contact_mobile', 'contact_phone'
 		]
 
 	def validate(self):

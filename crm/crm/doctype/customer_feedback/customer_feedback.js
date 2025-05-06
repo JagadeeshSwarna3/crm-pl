@@ -12,10 +12,13 @@ crm.CustomerFeedback = class CustomerFeedback extends frappe.ui.form.Controller 
 		this.set_feedback_from();
 		this.set_sales_person_from_user();
 		this.update_dynamic_fields();
+		this.set_dynamic_link();
 	}
 
 	setup_queries() {
 		let me = this;
+
+		me.frm.set_query('contact_person', frappe.contacts.contact_query);
 
 		me.frm.set_query("feedback_from", () => {
 			return {
@@ -51,8 +54,13 @@ crm.CustomerFeedback = class CustomerFeedback extends frappe.ui.form.Controller 
 	}
 
 	feedback_from () {
+		this.set_dynamic_link();
 		this.update_dynamic_fields();
 		this.frm.set_value("party_name", "");
+	}
+
+	contact_person() {
+		return crm.utils.get_contact_details(this.frm, "feedback_from");
 	}
 
 	party_name() {
@@ -68,6 +76,14 @@ crm.CustomerFeedback = class CustomerFeedback extends frappe.ui.form.Controller 
 		} else {
 			me.frm.set_df_property("party_name", "label", __("Party"));
 			me.frm.set_df_property("contact_person", "label", __("Contact Person"));
+		}
+	}
+
+	set_dynamic_link() {
+		frappe.dynamic_link = {
+			doc: this.frm.doc,
+			fieldname: 'party_name',
+			doctype: this.frm.doc.feedback_from || "Lead"
 		}
 	}
 

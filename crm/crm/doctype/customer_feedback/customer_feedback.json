@@ -257,8 +257,7 @@
    "fieldtype": "Link",
    "label": "Contact Person",
    "options": "Contact",
-   "print_hide": 1,
-   "read_only": 1
+   "print_hide": 1
   },
   {
    "fieldname": "contact_display",
@@ -316,7 +315,7 @@
   }
  ],
  "links": [],
- "modified": "2025-05-06 12:36:41.956978",
+ "modified": "2025-05-06 15:38:45.697472",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Customer Feedback",
