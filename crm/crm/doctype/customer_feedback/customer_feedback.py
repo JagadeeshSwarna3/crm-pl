@@ -9,10 +9,20 @@ from frappe.model.document import Document
 from frappe.utils import cstr
 from frappe.model.mapper import get_mapped_doc
 from frappe.utils import getdate, get_time, get_datetime, combine_datetime
+from frappe.contacts.doctype.contact.contact import get_default_contact
+from crm.crm.doctype.sales_person.sales_person import get_sales_person_from_user
+from crm.crm.utils import get_contact_details
+import json
 
 
 class CustomerFeedback(Document):
 	selling_or_buying = "selling"
+
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.force_party_fields = [
+			'contact_person', 'contact_display', 'contact_email', 'contact_mobile', 'contact_phone'
+		]
 
 	def validate(self):
 		self.set_missing_values()
@@ -20,6 +30,7 @@ class CustomerFeedback(Document):
 		self.set_title()
 		self.set_status()
 		self.get_previous_values()
+		self.set_sales_person()
 
 	def on_update(self):
 		self.update_communication()
@@ -61,10 +72,7 @@ class CustomerFeedback(Document):
 			self.set_customer_name()
 
 	def set_missing_values(self):
-		self.set_customer_name()
-
-	def set_customer_name(self):
-		self.customer_name = get_customer_name(self.feedback_from, self.party_name)
+		self.set_customer_details()
 
 	def set_title(self):
 		self.title = self.customer_name or self.party_name
@@ -161,17 +169,50 @@ class CustomerFeedback(Document):
 						frappe.bold(allowed_feedback_type),
 					))
 
+	def set_customer_details(self):
+		customer_details = get_customer_details(self.as_dict())
+		for k, v in customer_details.items():
+			if self.meta.has_field(k) and (not self.get(k) or k in self.force_party_fields):
+				self.set(k, v)
+
+	def set_sales_person(self):
+		if not self.get('sales_person') and self.is_new():
+			self.sales_person = get_sales_person_from_user()
+
+
 
 @frappe.whitelist()
-def get_customer_name(feedback_from, party_name):
-	if not feedback_from or not party_name:
+def get_customer_details(args):
+	from frappe.model.base_document import get_controller
+
+	if isinstance(args, str):
+		args = json.loads(args)
+
+	args = frappe._dict(args)
+
+	if not args.feedback_from or not args.party_name:
 		frappe.throw(_("Party is mandatory"))
 
-	party = frappe.get_cached_doc(feedback_from, party_name)
+	party = frappe.get_cached_doc(args.feedback_from, args.party_name)
+	out = frappe._dict()
+
 	if party.doctype == "Lead":
-		return party.company_name or party.lead_name
+		out.customer_name = party.company_name or party.lead_name
 	else:
-		return party.get("customer_name")
+		out.customer_name = party.get("customer_name")
+
+	lead = party if party.doctype == "Lead" else None
+
+	out.contact_person = args.contact_person
+	if not out.contact_person and party.doctype != "Lead":
+		out.contact_person = get_default_contact(party.doctype, party.name)
+
+	out.update(get_contact_details(out.contact_person, lead=lead))
+
+	if party.get("sales_person"):
+		out.sales_person = party.get("sales_person")
+
+	return out
 
 
 @frappe.whitelist()

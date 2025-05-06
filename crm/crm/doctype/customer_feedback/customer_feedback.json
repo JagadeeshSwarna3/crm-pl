@@ -13,16 +13,27 @@
   "customer_name",
   "column_break_2",
   "feedback_type",
+  "employee",
+  "employee_name",
   "feedback_sub_type",
   "feedback_sub_type_mandatory",
+  "is_employee_required",
   "column_break_vnzw",
   "feedback_source",
   "feedback_status",
   "feedback_status_mandatory",
+  "sales_person",
   "section_break_1",
   "reference_doctype",
   "column_break_1",
   "reference_name",
+  "contact_info",
+  "contact_person",
+  "contact_display",
+  "column_break_4",
+  "contact_mobile",
+  "contact_phone",
+  "contact_email",
   "sec_applies_to",
   "column_break_13",
   "section_break_9",
@@ -225,10 +236,87 @@
   {
    "fieldname": "column_break_vnzw",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sales_person",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Sales Person",
+   "options": "Sales Person"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "contact_info",
+   "fieldtype": "Section Break",
+   "label": "Contact and Address",
+   "options": "fa fa-bullhorn"
+  },
+  {
+   "depends_on": "eval:doc.feedback_from != \"Lead\" || doc.contact_person",
+   "fieldname": "contact_person",
+   "fieldtype": "Link",
+   "label": "Contact Person",
+   "options": "Contact",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "contact_display",
+   "fieldtype": "Small Text",
+   "in_global_search": 1,
+   "label": "Contact Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_mobile",
+   "fieldtype": "Data",
+   "label": "Mobile No",
+   "options": "Phone",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contact_phone",
+   "fieldtype": "Data",
+   "label": "Phone No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contact_email",
+   "fieldtype": "Data",
+   "label": "Email Address",
+   "options": "Email",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.is_employee_required",
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "depends_on": "eval:doc.is_employee_required",
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fetch_from": "feedback_type.is_employee_required",
+   "fieldname": "is_employee_required",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Employee Required"
   }
  ],
  "links": [],
- "modified": "2025-05-01 00:38:18.601719",
+ "modified": "2025-05-06 12:36:41.956978",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Customer Feedback",

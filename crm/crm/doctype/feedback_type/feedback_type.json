@@ -8,7 +8,8 @@
  "field_order": [
   "feedback_type",
   "feedback_sub_type_mandatory",
-  "feedback_status_mandatory"
+  "feedback_status_mandatory",
+  "is_employee_required"
  ],
  "fields": [
   {
@@ -32,11 +33,18 @@
    "fieldtype": "Check",
    "in_list_view": 1,
    "label": "Feedback Status mandatory"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_employee_required",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Employee Required"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-25 17:31:27.562559",
+ "modified": "2025-05-06 12:28:56.192971",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Feedback Type",
