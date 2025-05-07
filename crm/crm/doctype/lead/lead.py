@@ -33,7 +33,7 @@ class Lead(StatusUpdater):
 		self.validate_email_address()
 		self.validate_mobile_no()
 		self.validate_tax_id()
-		self.check_email_id_is_unique()
+		# self.check_email_id_is_unique()
 		self.set_gravatar()
 		self.set_status()
 
