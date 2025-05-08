@@ -568,7 +568,7 @@ class Appointment(StatusUpdater):
 
 
 @frappe.whitelist()
-def get_appointment_timeslots(scheduled_date, appointment_type, appointment=None):
+def get_appointment_timeslots(scheduled_date, appointment_type, appointment=None, include_available_agents=False):
 	out = frappe._dict({
 		'holiday': None,
 		'timeslots': []
@@ -587,8 +587,19 @@ def get_appointment_timeslots(scheduled_date, appointment_type, appointment=None
 
 	if timeslots:
 		for timeslot_start, timeslot_end in timeslots:
-			appointments_in_slots = count_appointments_in_slot(timeslot_start, timeslot_end, appointment_type,
-				appointment)
+			appointments_available = get_appointments_in_slot(
+				timeslot_start,
+				timeslot_end,
+				appointment_type,
+				appointment
+			) or []
+			appointments_in_slots = len(appointments_available)
+
+			available_agents = get_allowed_sales_persons(appointment_type)
+
+			if include_available_agents:
+				booked_agents = {appointment.sales_person for appointment in appointments_available}
+				available_agents = [agent for agent in available_agents if agent not in booked_agents]
 
 			timeslot_data = {
 				'timeslot_start': timeslot_start,
@@ -598,6 +609,8 @@ def get_appointment_timeslots(scheduled_date, appointment_type, appointment=None
 				'booked': appointments_in_slots,
 				'available': max(0, no_of_agents - appointments_in_slots)
 			}
+			if include_available_agents:
+				timeslot_data['available_agents'] = available_agents
 			out.timeslots.append(timeslot_data)
 
 	elif timeslots is None:
