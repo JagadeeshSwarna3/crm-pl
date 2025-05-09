@@ -33,5 +33,6 @@ def on_doctype_update():
 
 
 @frappe.whitelist()
-def get_sales_person_from_user():
-	return frappe.db.get_value("Sales Person", {"user_id": frappe.session.user, "enabled": 1})
+def get_sales_person_from_user(user=None):
+	user = user or frappe.session.user
+	return frappe.db.get_value("Sales Person", {"user_id": user, "enabled": 1})

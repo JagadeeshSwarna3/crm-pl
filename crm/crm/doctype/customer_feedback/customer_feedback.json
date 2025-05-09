@@ -13,16 +13,18 @@
   "customer_name",
   "column_break_2",
   "feedback_type",
-  "employee",
-  "employee_name",
   "feedback_sub_type",
   "feedback_sub_type_mandatory",
   "is_employee_required",
   "column_break_vnzw",
+  "sales_person",
   "feedback_source",
   "feedback_status",
   "feedback_status_mandatory",
-  "sales_person",
+  "sec_employee",
+  "employee",
+  "column_break_l75l",
+  "employee_name",
   "section_break_1",
   "reference_doctype",
   "column_break_1",
@@ -33,6 +35,7 @@
   "column_break_4",
   "contact_mobile",
   "contact_phone",
+  "column_break_vmxg",
   "contact_email",
   "sec_applies_to",
   "column_break_13",
@@ -248,7 +251,7 @@
    "collapsible": 1,
    "fieldname": "contact_info",
    "fieldtype": "Section Break",
-   "label": "Contact and Address",
+   "label": "Contact Details",
    "options": "fa fa-bullhorn"
   },
   {
@@ -261,7 +264,7 @@
   },
   {
    "fieldname": "contact_display",
-   "fieldtype": "Small Text",
+   "fieldtype": "Data",
    "in_global_search": 1,
    "label": "Contact Name",
    "read_only": 1
@@ -291,14 +294,12 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval:doc.is_employee_required",
    "fieldname": "employee",
    "fieldtype": "Link",
    "label": "Employee",
    "options": "Employee"
   },
   {
-   "depends_on": "eval:doc.is_employee_required",
    "fetch_from": "employee.employee_name",
    "fieldname": "employee_name",
    "fieldtype": "Data",
@@ -312,10 +313,23 @@
    "fieldtype": "Check",
    "hidden": 1,
    "label": "Is Employee Required"
+  },
+  {
+   "depends_on": "eval:doc.is_employee_required || doc.employee",
+   "fieldname": "sec_employee",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_l75l",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_vmxg",
+   "fieldtype": "Column Break"
   }
  ],
  "links": [],
- "modified": "2025-05-06 15:38:45.697472",
+ "modified": "2025-05-09 23:37:24.696901",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Customer Feedback",
