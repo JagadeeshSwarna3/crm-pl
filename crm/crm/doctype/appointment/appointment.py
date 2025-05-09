@@ -569,6 +569,8 @@ class Appointment(StatusUpdater):
 
 @frappe.whitelist()
 def get_appointment_timeslots(scheduled_date, appointment_type, appointment=None, include_available_agents=False):
+	include_available_agents = cint(include_available_agents)
+
 	out = frappe._dict({
 		'holiday': None,
 		'timeslots': []
@@ -587,30 +589,29 @@ def get_appointment_timeslots(scheduled_date, appointment_type, appointment=None
 
 	if timeslots:
 		for timeslot_start, timeslot_end in timeslots:
-			appointments_available = get_appointments_in_slot(
+			appointments_in_slot = get_appointments_in_slot(
 				timeslot_start,
 				timeslot_end,
-				appointment_type,
-				appointment
-			) or []
-			appointments_in_slots = len(appointments_available)
-
-			available_agents = get_allowed_sales_persons(appointment_type)
-
-			if include_available_agents:
-				booked_agents = {appointment.sales_person for appointment in appointments_available}
-				available_agents = [agent for agent in available_agents if agent not in booked_agents]
+				appointment_type=appointment_type,
+				appointment=appointment,
+			)
+			no_of_booked_slots = len(appointments_in_slot)
 
 			timeslot_data = {
 				'timeslot_start': timeslot_start,
 				'timeslot_end': timeslot_end,
 				'timeslot_duration': round((timeslot_end - timeslot_start) / datetime.timedelta(minutes=1)),
 				'number_of_agents': no_of_agents,
-				'booked': appointments_in_slots,
-				'available': max(0, no_of_agents - appointments_in_slots)
+				'booked': no_of_booked_slots,
+				'available': max(0, no_of_agents - no_of_booked_slots)
 			}
+
 			if include_available_agents:
+				allowed_sales_persons = get_allowed_sales_persons(appointment_type)
+				booked_agents = {app.sales_person for app in appointments_in_slot if app.sales_person}
+				available_agents = [agent for agent in allowed_sales_persons if agent not in booked_agents]
 				timeslot_data['available_agents'] = available_agents
+
 			out.timeslots.append(timeslot_data)
 
 	elif timeslots is None:
@@ -669,7 +670,7 @@ def get_appointments_in_slot(start_dt, end_dt, appointment_type=None, appointmen
 		'sales_person': sales_person,
 	}, as_dict=1)
 
-	return appointments
+	return appointments or []
 
 
 def auto_mark_missed():
