@@ -37,7 +37,6 @@ class Opportunity(StatusUpdater):
 		self.set_missing_values()
 		self.validate_contact_no()
 		self.validate_follow_up()
-		self.set_sales_person()
 		self.set_status()
 		self.set_title()
 
@@ -90,12 +89,13 @@ class Opportunity(StatusUpdater):
 		if update:
 			self.db_set('status', self.status, update_modified=update_modified)
 
-	def set_sales_person(self):
+	def set_sales_person_from_user(self):
 		if not self.get('sales_person') and self.is_new():
 			self.sales_person = get_sales_person_from_user()
 
 	def set_missing_values(self):
 		self.conversion_document = frappe.get_cached_value("Opportunity Type", self.opportunity_type, "conversion_document")
+		self.set_sales_person_from_user()
 		self.set_customer_details()
 		self.set_sales_person_details()
 

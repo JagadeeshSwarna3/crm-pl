@@ -10,10 +10,15 @@ crm.CustomerFeedback = class CustomerFeedback extends frappe.ui.form.Controller 
 
 	refresh () {
 		this.set_feedback_from();
+		this.set_sales_person_from_user();
+		this.update_dynamic_fields();
+		this.set_dynamic_link();
 	}
 
 	setup_queries() {
 		let me = this;
+
+		me.frm.set_query('contact_person', frappe.contacts.contact_query);
 
 		me.frm.set_query("feedback_from", () => {
 			return {
@@ -49,33 +54,58 @@ crm.CustomerFeedback = class CustomerFeedback extends frappe.ui.form.Controller 
 	}
 
 	feedback_from () {
+		this.set_dynamic_link();
 		this.update_dynamic_fields();
 		this.frm.set_value("party_name", "");
 	}
 
+	contact_person() {
+		return crm.utils.get_contact_details(this.frm, "feedback_from");
+	}
+
 	party_name() {
-		return this.get_customer_name();
+		return this.get_customer_details();
 	}
 
 	update_dynamic_fields() {
+		let me = this;
+
 		if (this.frm.doc.feedback_from) {
-			this.frm.set_df_property("party_name", "label", __(this.frm.doc.feedback_from));
+			me.frm.set_df_property("party_name", "label", __(me.frm.doc.feedback_from));
+			me.frm.set_df_property("contact_person", "label", __(me.frm.doc.feedback_from + " Contact Person"));
 		} else {
-			this.frm.set_df_property("party_name", "label", __("Party"));
+			me.frm.set_df_property("party_name", "label", __("Party"));
+			me.frm.set_df_property("contact_person", "label", __("Contact Person"));
 		}
 	}
 
-	get_customer_name() {
+	set_dynamic_link() {
+		frappe.dynamic_link = {
+			doc: this.frm.doc,
+			fieldname: 'party_name',
+			doctype: this.frm.doc.feedback_from || "Lead"
+		}
+	}
+
+	get_customer_details() {
 		if (this.frm.doc.feedback_from && this.frm.doc.party_name) {
 			return frappe.call({
-				method: "crm.crm.doctype.customer_feedback.customer_feedback.get_customer_name",
+				method: "crm.crm.doctype.customer_feedback.customer_feedback.get_customer_details",
 				args: {
-					feedback_from: this.frm.doc.feedback_from,
-					party_name: this.frm.doc.party_name,
+					args: {
+						doctype: this.frm.doc.doctype,
+						feedback_from: this.frm.doc.feedback_from,
+						party_name: this.frm.doc.party_name,
+						project: this.frm.doc.project,
+					}
 				},
 				callback: (r) => {
-					if (!r.exc) {
-						this.frm.set_value("customer_name", r.message);
+					if (r.message && !r.exc) {
+						for (let key in r.message) {
+							if (r.message.hasOwnProperty(key) && this.frm.fields_dict[key]) {
+								this.frm.set_value(key, r.message[key]);
+							}
+						}
 					}
 				}
 			});
@@ -91,7 +121,7 @@ crm.CustomerFeedback = class CustomerFeedback extends frappe.ui.form.Controller 
 	}
 
 	determine_party() {
-		if (this.frm.doc.reference_doctype && this.frm.doc.reference_name) {
+		if (this.frm.doc.reference_doctype && this.frm.doc.reference_name && !this.frm.doc.party_name) {
 			return this.frm.call({
 				method: "determine_party_from_reference_name",
 				doc: this.frm.doc,
@@ -107,6 +137,18 @@ crm.CustomerFeedback = class CustomerFeedback extends frappe.ui.form.Controller 
 			this.frm.set_value('feedback_sub_type', null);
 			this.frm.set_value('feedback_status', null);
 		}
+	}
+
+	set_sales_person_from_user() {
+		if (!this.frm.get_field('sales_person') || this.frm.doc.sales_person || !this.frm.doc.__islocal) {
+			return;
+		}
+
+		crm.utils.get_sales_person_from_user(sales_person => {
+			if (sales_person) {
+				this.frm.set_value('sales_person', sales_person);
+			}
+		});
 	}
 }
 
