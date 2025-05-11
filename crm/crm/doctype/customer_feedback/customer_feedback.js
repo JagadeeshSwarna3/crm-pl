@@ -96,6 +96,7 @@ crm.CustomerFeedback = class CustomerFeedback extends frappe.ui.form.Controller 
 						doctype: this.frm.doc.doctype,
 						feedback_from: this.frm.doc.feedback_from,
 						party_name: this.frm.doc.party_name,
+						project: this.frm.doc.project,
 					}
 				},
 				callback: (r) => {
@@ -120,7 +121,7 @@ crm.CustomerFeedback = class CustomerFeedback extends frappe.ui.form.Controller 
 	}
 
 	determine_party() {
-		if (this.frm.doc.reference_doctype && this.frm.doc.reference_name) {
+		if (this.frm.doc.reference_doctype && this.frm.doc.reference_name && !this.frm.doc.party_name) {
 			return this.frm.call({
 				method: "determine_party_from_reference_name",
 				doc: this.frm.doc,

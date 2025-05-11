@@ -74,9 +74,6 @@ class CustomerFeedback(Document):
 					frappe.get_desk_link(source.doctype, source.name)
 				))
 
-		if self.feedback_from and self.party_name:
-			self.set_customer_name()
-
 	def set_missing_values(self):
 		self.set_sales_person_from_user()
 		self.set_customer_details()
@@ -222,13 +219,24 @@ def get_customer_details(args):
 	else:
 		out.customer_name = party.get("customer_name")
 
+	out.update(get_customer_feedback_contact_details(args))
+
+	return out
+
+
+def get_customer_feedback_contact_details(args):
+	party = frappe.get_cached_doc(args.feedback_from, args.party_name)
 	lead = party if party.doctype == "Lead" else None
+
+	out = frappe._dict()
 
 	out.contact_person = args.contact_person
 	if not out.contact_person and party.doctype != "Lead":
 		out.contact_person = get_default_contact(party.doctype, party.name)
 
 	out.update(get_contact_details(out.contact_person, lead=lead))
+
+	frappe.utils.call_hook_method("get_customer_feedback_contact_details", args, out)
 
 	return out
 
