@@ -233,6 +233,10 @@ class Appointment(StatusUpdater):
 		if not user_sales_person:
 			return
 
+		allowed_sales_persons = get_allowed_sales_persons(self.appointment_type)
+		if not allowed_sales_persons or user_sales_person not in allowed_sales_persons:
+			return
+
 		# check if not changed
 		if not self.is_new() and cstr(self.sales_person) == cstr(self.db_get("sales_person")):
 			return
