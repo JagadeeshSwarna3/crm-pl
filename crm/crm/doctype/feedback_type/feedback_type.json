@@ -9,7 +9,8 @@
   "feedback_type",
   "feedback_sub_type_mandatory",
   "feedback_status_mandatory",
-  "is_employee_required"
+  "is_employee_required",
+  "exclude_from_customer_feedback_index"
  ],
  "fields": [
   {
@@ -40,11 +41,18 @@
    "fieldtype": "Check",
    "in_list_view": 1,
    "label": "Is Employee Required"
+  },
+  {
+   "default": "0",
+   "fieldname": "exclude_from_customer_feedback_index",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Exclude from Customer Feedback Index Report"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-06 12:28:56.192971",
+ "modified": "2025-05-15 11:19:41.946063",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Feedback Type",
