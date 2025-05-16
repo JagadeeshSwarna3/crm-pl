@@ -16,7 +16,6 @@
   {
    "fieldname": "feedback_type",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Feedback Type",
    "reqd": 1,
    "unique": 1
@@ -26,14 +25,14 @@
    "fieldname": "feedback_sub_type_mandatory",
    "fieldtype": "Check",
    "in_list_view": 1,
-   "label": "Feedback Sub Type mandatory"
+   "label": "Feedback Sub Type Mandatory"
   },
   {
    "default": "0",
    "fieldname": "feedback_status_mandatory",
    "fieldtype": "Check",
    "in_list_view": 1,
-   "label": "Feedback Status mandatory"
+   "label": "Feedback Status Mandatory"
   },
   {
    "default": "0",
@@ -47,12 +46,12 @@
    "fieldname": "exclude_from_customer_feedback_index",
    "fieldtype": "Check",
    "in_list_view": 1,
-   "label": "Exclude from Customer Feedback Index Report"
+   "label": "Exclude from Feedback Index Report"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-15 11:19:41.946063",
+ "modified": "2025-05-16 12:10:57.646711",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Feedback Type",
